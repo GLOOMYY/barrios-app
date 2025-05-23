@@ -1,10 +1,10 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState } from "react"
+// import { useRef } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { RotateCcw, ArrowRight } from "lucide-react"
-import medellin from "@/data/diccionario"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import diccionario, { Comunas, Barrios } from "@/data/diccionario"
 import ProgressTracker from "@/components/ProgressTracker"
 import Wheel from "@/components/Wheel"
 import Results from "@/components/Results"
@@ -13,7 +13,8 @@ export default function RuletaPage() {
   // Diccionario con estructura jerárquica: Zonas -> Comunas -> Barrios
 
   // Estados para manejar la navegación jerárquica
-  const [nivelActual, setNivelActual] = useState("zonas") // zonas, comunas, barrios
+  type Nivel = "zonas" | "comunas" | "barrios";
+  const [nivelActual, setNivelActual] = useState<Nivel>("zonas"); // zonas, comunas, barrios
   const [zonaSeleccionada, setZonaSeleccionada] = useState("")
   const [comunaSeleccionada, setComunaSeleccionada] = useState("")
   const [barrioSeleccionado, setBarrioSeleccionado] = useState("")
@@ -22,26 +23,34 @@ export default function RuletaPage() {
   // Estados para la ruleta
   const [girando, setGirando] = useState(false)
   const [angulo, setAngulo] = useState(0)
-  const ruletaRef = useRef(null)
+  // const ruletaRef = useRef(null)
 
   // Obtener los elementos a mostrar según el nivel actual
   function obtenerElementosActuales() {
     if (nivelActual === "zonas") {
-      return Object.keys(medellin)
+      return Object.keys(diccionario);
     } else if (nivelActual === "comunas" && zonaSeleccionada) {
-      // Verificar que la zona seleccionada existe en el diccionario
-      if (medellin[zonaSeleccionada]) {
-        return Object.keys(medellin[zonaSeleccionada])
+      const comunas = diccionario[zonaSeleccionada];
+      // Check if the selected zone exists and its value is an object (Comunas)
+      if (comunas && typeof comunas === 'object' && !Array.isArray(comunas)) {
+        const comunasDict = comunas as Comunas; // Explicitly assert type
+        return Object.keys(comunasDict);
       }
-      return []
+      return [];
     } else if (nivelActual === "barrios" && zonaSeleccionada && comunaSeleccionada) {
-      // Verificar que tanto la zona como la comuna existen en el diccionario
-      if (medellin[zonaSeleccionada] && medellin[zonaSeleccionada][comunaSeleccionada]) {
-        return medellin[zonaSeleccionada][comunaSeleccionada]
+      const comunas = diccionario[zonaSeleccionada];
+      // Check if the selected zone exists and its value is an object (Comunas)
+      if (comunas && typeof comunas === 'object' && !Array.isArray(comunas)) {
+        const comunasDict = comunas as Comunas; // Explicitly assert type
+        const barrios = comunasDict[comunaSeleccionada];
+        // Check if the selected commune exists within the zone and its value is a string array (Barrios)
+        if (barrios && Array.isArray(barrios)) {
+          return barrios as Barrios; // Explicitly assert type
+        }
       }
-      return []
+      return [];
     }
-    return []
+    return [];
   }
 
   const elementosActuales = obtenerElementosActuales()
@@ -135,7 +144,7 @@ export default function RuletaPage() {
                   angulo={angulo}
                   girando={girando}
                   nivelActual={nivelActual}
-                  ruletaRef={ruletaRef}
+                  onGirar={girarRuleta}
                 />
 
                 <Button

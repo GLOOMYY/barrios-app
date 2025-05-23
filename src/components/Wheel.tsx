@@ -49,7 +49,7 @@ const Wheel = ({ elementos, girando, angulo, nivelActual }: WheelProps) => {
         className="w-full h-full transform transition-transform duration-[3000ms] ease-[cubic-bezier(0.2,0.8,0.2,1)]"
         style={{
           transform: `rotate(${angulo}deg)`,
-          transition: girando ? "transform 3s cubic-bezier(0.2, 0.8, 0.2, 1)" : "none",
+          transition: girando ? "transform 3s cubic-bezier(0.2, 0.8, 0.2, 1)" : "none"
         }}
       >
         {elementos.map((el, i) => {

@@ -1,4 +1,11 @@
-const medellin = {
+interface MedellinDictionary {
+  [key: string]: MedellinDictionary | string[];
+}
+
+export type Barrios = string[];
+export type Comunas = { [key: string]: Barrios };
+
+const diccionario: MedellinDictionary = {
   "Zona Nororiental": {
     "1 - Popular": [
       "Popular Nº 1",
@@ -339,4 +346,4 @@ const medellin = {
   }
 };
 
-export default medellin;
+export default diccionario;
